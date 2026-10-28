@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CareSync — Smart Caregiver-Synced AI Health Companion for Medication Adherence</title>
+<meta name="description" content="CareSync is an AI health companion for medication adherence: smart dose reminders, adherence analytics, an AI care companion, refill and side-effect tracking, and real-time caregiver sync." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%2314b8a6'/%3E%3Cpath d='M50 76C34 64 22 55 22 43a16 16 0 0 1 28-11 16 16 0 0 1 28 11c0 12-12 21-28 33z' fill='white'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- ============ NAVBAR ============ -->
+<nav class="navbar" id="navbar">
+  <div class="container nav-inner">
+    <a href="#home" class="brand">
+      <span class="brand-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </span>
+      <span class="brand-text">Care<em>Sync</em></span>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="#home" class="nav-link">Home</a>
+      <a href="#dashboard" class="nav-link">Dashboard</a>
+      <a href="#meds" class="nav-link">Medications</a>
+      <a href="#companion" class="nav-link">AI Companion</a>
+      <a href="#caregiver" class="nav-link">Caregiver Sync</a>
+      <a href="#journal" class="nav-link">Journal</a>
+      <a href="#faq" class="nav-link">FAQ</a>
+    </div>
+    <div class="nav-actions">
+      <a href="#companion" class="btn btn-primary btn-sm">Talk to Companion</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero" id="home">
+  <div class="hero-bg" aria-hidden="true">
+    <span class="blob blob-1"></span>
+    <span class="blob blob-2"></span>
+    <span class="blob blob-3"></span>
+    <span class="grid-overlay"></span>
+  </div>
+  <div class="container hero-inner">
+    <div class="hero-content">
+      <span class="hero-badge"><span class="pulse-dot"></span> AI Health Companion · Caregiver Synced</span>
+      <h1 class="hero-title">Never miss a dose with your <span class="gradient-text">AI care companion</span></h1>
+      <p class="hero-sub">
+        CareSync tracks every dose, nudges you at the right moment, coaches you with an AI companion,
+        and keeps your caregiver instantly informed — with refill alerts and side-effect logging built in.
+      </p>
+      <div class="hero-cta">
+        <a href="#dashboard" class="btn btn-primary btn-lg">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 12l4-4 3 3 5-6"/></svg>
+          Open My Dashboard
+        </a>
+        <a href="#companion" class="btn btn-ghost btn-lg">Meet Your AI Companion</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><strong id="statDoses">0</strong><span>Doses tracked</span></div>
+        <div class="stat"><strong id="statAdherence">—</strong><span>Adherence rate</span></div>
+        <div class="stat"><strong id="statStreak">0</strong><span>Day streak</span></div>
+        <div class="stat"><strong id="statCaregivers">0</strong><span>Caregivers synced</span></div>
+      </div>
+    </div>
+
+    <div class="hero-visual" aria-hidden="true">
+      <div class="viz-card viz-main">
+        <div class="viz-head">
+          <span class="viz-chip">Next Dose</span>
+          <span class="viz-live">● LIVE</span>
+        </div>
+        <div class="viz-body">
+          <div class="viz-row"><span>Medication</span><strong id="hvMed">—</strong></div>
+          <div class="viz-row"><span>Scheduled</span><strong id="hvTime">—</strong></div>
+          <div class="viz-row"><span>Countdown</span><strong id="hvCount">—</strong></div>
+          <div class="viz-divider"></div>
+          <div class="viz-progress-label"><span>Today's progress</span><b id="hvTodayText">0 / 0 taken</b></div>
+          <div class="viz-progress"><span id="hvTodayBar"></span></div>
+        </div>
+      </div>
+      <div class="viz-card viz-float viz-sync">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#14b8a6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2.1a4 4 0 0 1 4 4l-.5 1.5a8 8 0 0 1 0 5.8L21 17.9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4l.5-1.5a8 8 0 0 1 0-5.8L3 6.1a4 4 0 0 1 4-4z" transform="translate(1 0)"/><circle cx="12" cy="12" r="3"/></svg>
+        <div><strong>Caregiver synced</strong><small id="hvSync">just now</small></div>
+      </div>
+      <div class="viz-card viz-float viz-alert">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div><strong>Smart reminders</strong><small id="hvAlert">on schedule</small></div>
+      </div>
+    </div>
+  </div>
+  <a href="#features" class="hero-scroll" aria-label="Scroll down">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+  </a>
+</header>
+
+<!-- ============ FEATURES ============ -->
+<section class="section section-compact" id="features">
+  <div class="container">
+    <div class="feature-grid">
+      <div class="feature-card reveal">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+        <h3>Smart Dose Reminders</h3>
+        <p>Time-aware nudges for every scheduled dose, with a grace window, snooze-free discipline and missed-dose escalation.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <h3>AI Companion Chat</h3>
+        <p>A conversational companion that answers schedule questions, coaches missed doses and flags red-flag symptoms.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2.1a4 4 0 0 1 4 4l-.5 1.5a8 8 0 0 1 0 5.8L21 17.9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4l.5-1.5a8 8 0 0 1 0-5.8L3 6.1a4 4 0 0 1 4-4z"/><circle cx="12" cy="12" r="3"/></svg></div>
+        <h3>Caregiver Sync</h3>
+        <p>Share a sync code with family or care staff. Missed doses, refills and side effects reach them in real time.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg></div>
+        <h3>Refill &amp; Side-Effect Log</h3>
+        <p>Pill-count countdown warns before you run out, while a severity-rated journal captures how you actually feel.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DASHBOARD ============ -->
+<section class="section" id="dashboard">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="section-kicker">Adherence Dashboard</span>
+      <h2 class="section-title">Your health, <span class="gradient-text">at a glance</span></h2>
+      <p class="section-sub">Live adherence ring, today's schedule and a 7-day trend — every action syncs straight to your caregiver.</p>
+    </div>
+
+    <div class="kpi-grid reveal">
+      <div class="kpi-card">
+        <div class="kpi-top"><span class="kpi-label">Today's adherence</span>
+          <span class="kpi-icon kpi-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+        </div>
+        <div class="kpi-value" id="kpiToday">—</div>
+        <div class="kpi-sub" id="kpiTodaySub">Loading…</div>
+        <div class="mini-bar"><span id="kpiTodayBar"></span></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-top"><span class="kpi-label">Last 7 days</span>
+          <span class="kpi-icon kpi-indigo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 12l4-4 3 3 5-6"/></svg></span>
+        </div>
+        <div class="kpi-value" id="kpiWeek">—</div>
+        <div class="kpi-sub" id="kpiWeekSub">Loading…</div>
+        <div class="mini-bar"><span id="kpiWeekBar"></span></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-top"><span class="kpi-label">Perfect-day streak</span>
+          <span class="kpi-icon kpi-amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2s4 4 4 8a4 4 0 0 1-8 0c0-1 .5-2 1-3-3 1-5 4-5 8a8 8 0 0 0 16 0c0-6-8-11-8-11z"/></svg></span>
+        </div>
+        <div class="kpi-value" id="kpiStreak">0</div>
+        <div class="kpi-sub" id="kpiStreakSub">Days in a row at 100%</div>
+        <div class="mini-bar"><span id="kpiStreakBar"></span></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-top"><span class="kpi-label">Refills due</span>
+          <span class="kpi-icon kpi-rose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
+        </div>
+        <div class="kpi-value" id="kpiRefills">0</div>
+        <div class="kpi-sub" id="kpiRefillsSub">Medications running low</div>
+        <div class="mini-bar"><span id="kpiRefillsBar"></span></div>
+      </div>
+    </div>
+
+    <div class="dash-grid reveal">
+      <div class="panel ring-panel">
+        <div class="panel-head"><h3>Adherence Ring</h3></div>
+        <div class="ring-wrap">
+          <svg viewBox="0 0 120 120" class="ring-svg" aria-hidden="true">
+            <circle cx="60" cy="60" r="52" class="ring-track" />
+            <circle cx="60" cy="60" r="52" class="ring-fill" id="ringFill" />
+          </svg>
+          <div class="ring-center"><strong id="ringPct">0%</strong><span id="ringSub">today</span></div>
+        </div>
+        <div class="ring-legend">
+          <span><i class="dot dot-taken"></i> Taken <b id="legTaken">0</b></span>
+          <span><i class="dot dot-due"></i> Due <b id="legDue">0</b></span>
+          <span><i class="dot dot-missed"></i> Missed <b id="legMissed">0</b></span>
+        </div>
+        <button class="btn btn-ghost btn-block btn-sm" id="enableNotify">Enable browser reminders</button>
+      </div>
+
+      <div class="panel schedule-panel">
+        <div class="panel-head">
+          <h3>Today's Schedule</h3>
+          <span class="chip" id="todayDate">—</span>
+        </div>
+        <div class="dose-list" id="todayList"></div>
+        <p class="panel-note">Actions are recorded instantly and pushed to your linked caregivers.</p>
+      </div>
+
+      <div class="panel chart-panel span-2">
+        <div class="panel-head">
+          <h3>7-Day Adherence Trend</h3>
+          <span class="chip chip-soft">Goal ≥ 80%</span>
+        </div>
+        <canvas id="weekChart" width="900" height="260" class="chart-canvas"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MEDICATIONS ============ -->
+<section class="section section-alt" id="meds">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="section-kicker">Medications &amp; Refills</span>
+      <h2 class="section-title">Your medication <span class="gradient-text">schedule</span></h2>
+      <p class="section-sub">Add a medicine, set its times, and CareSync builds reminders, adherence tracking and a refill countdown automatically.</p>
+    </div>
+
+    <div class="meds-layout reveal">
+      <div class="panel form-card">
+        <div class="panel-head">
+          <h3 id="medFormTitle">Add Medication</h3>
+          <span class="chip chip-soft" id="medFormTag">New</span>
+        </div>
+        <form id="medForm" novalidate>
+          <div class="field">
+            <label for="medName">Medication name <span class="req">*</span></label>
+            <input type="text" id="medName" placeholder="e.g. Metformin" autocomplete="off" />
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="medStrength">Strength</label>
+              <input type="text" id="medStrength" placeholder="e.g. 500 mg" autocomplete="off" />
+            </div>
+            <div class="field">
+              <label for="medAmount">Dose form</label>
+              <input type="text" id="medAmount" placeholder="e.g. 1 tablet" autocomplete="off" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="medTimes">Times <span class="req">*</span></label>
+            <input type="text" id="medTimes" placeholder="08:00, 20:00" autocomplete="off" />
+            <small class="hint">24-hour times, comma separated. Up to 6 times per day.</small>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="medPills">Pills remaining</label>
+              <input type="number" id="medPills" min="0" step="1" placeholder="30" />
+            </div>
+            <div class="field">
+              <label for="medRefillSize">Refill size</label>
+              <input type="number" id="medRefillSize" min="1" step="1" placeholder="30" />
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="medStart">Start date</label>
+              <input type="date" id="medStart" />
+            </div>
+            <div class="field">
+              <label for="medColor">Colour tag</label>
+              <select id="medColor">
+                <option value="teal">Teal</option>
+                <option value="indigo">Indigo</option>
+                <option value="amber">Amber</option>
+                <option value="rose">Rose</option>
+                <option value="violet">Violet</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="medNotes">Instructions</label>
+            <textarea id="medNotes" rows="2" placeholder="e.g. Take with food"></textarea>
+          </div>
+          <div class="form-errors" id="medErrors" role="alert"></div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-block" id="medSubmit">Add Medication</button>
+            <button type="button" class="btn btn-ghost btn-block hidden" id="medCancel">Cancel edit</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="med-grid" id="medGrid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ AI COMPANION ============ -->
+<section class="section" id="companion">
+  <div class="container container-narrow">
+    <div class="section-head reveal">
+      <span class="section-kicker">AI Health Companion</span>
+      <h2 class="section-title">Talk to someone who <span class="gradient-text">knows your routine</span></h2>
+      <p class="section-sub">Ask about your schedule, adherence, refills or how a dose made you feel — the companion answers with your live data.</p>
+    </div>
+
+    <div class="chat-shell reveal">
+      <div class="chat-head">
+        <div class="chat-avatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </div>
+        <div class="chat-id">
+          <strong>CareSync Companion</strong>
+          <span><i class="online-dot"></i> Online · knows your schedule</span>
+        </div>
+        <button class="btn btn-ghost btn-sm" id="clearChat">Clear</button>
+      </div>
+      <div class="chat-messages" id="chatMessages" aria-live="polite"></div>
+      <div class="chat-chips" id="chatChips">
+        <button class="chip-btn" data-q="What's my next dose?">What's my next dose?</button>
+        <button class="chip-btn" data-q="How am I doing this week?">How am I doing?</button>
+        <button class="chip-btn" data-q="I missed a dose">I missed a dose</button>
+        <button class="chip-btn" data-q="Any refills due?">Any refills due?</button>
+        <button class="chip-btn" data-q="I feel dizzy">I feel dizzy</button>
+        <button class="chip-btn" data-q="Is my caregiver synced?">Is my caregiver synced?</button>
+      </div>
+      <form class="chat-form" id="chatForm">
+        <input type="text" id="chatInput" placeholder="Ask about your meds, adherence or how you feel…" autocomplete="off" />
+        <button type="submit" class="btn btn-primary chat-send" aria-label="Send">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </form>
+      <p class="chat-disclaimer">Educational guidance only — not medical advice. For emergencies, contact local emergency services.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CAREGIVER SYNC ============ -->
+<section class="section section-alt" id="caregiver">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="section-kicker">Caregiver Sync</span>
+      <h2 class="section-title">Your care team, <span class="gradient-text">always in the loop</span></h2>
+      <p class="section-sub">Share a sync code with family or care staff. Missed doses, low refills and severe side effects are pushed to them automatically.</p>
+    </div>
+
+    <div class="caregiver-grid reveal">
+      <div class="panel">
+        <div class="panel-head"><h3>Sync Centre</h3><span class="chip chip-live"><span class="pulse-dot"></span> Live</span></div>
+
+        <div class="sync-code-box">
+          <div>
+            <small>Your sync code</small>
+            <strong id="syncCode">————</strong>
+          </div>
+          <button class="btn btn-primary btn-sm" id="copySyncBtn">Copy code</button>
+        </div>
+
+        <div class="sync-status">
+          <div class="sync-status-row"><span>Last sync with care team</span><b id="lastSync">just now</b></div>
+          <div class="sync-status-row">
+            <span>Share adherence data</span>
+            <label class="switch">
+              <input type="checkbox" id="shareToggle" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary btn-block btn-sm" id="syncNowBtn">Sync now</button>
+            <button class="btn btn-ghost btn-block btn-sm" id="sendReportBtn">Send weekly report</button>
+          </div>
+        </div>
+
+        <div class="sub-head">Linked caregivers <span class="count-pill" id="cgCount">0</span></div>
+        <div class="cg-list" id="caregiverList"></div>
+
+        <form class="cg-form" id="cgForm" novalidate>
+          <div class="field-row">
+            <div class="field">
+              <label for="cgName">Name <span class="req">*</span></label>
+              <input type="text" id="cgName" placeholder="e.g. Anita Sharma" autocomplete="off" />
+            </div>
+            <div class="field">
+              <label for="cgRelation">Relation</label>
+              <select id="cgRelation">
+                <option>Daughter</option>
+                <option>Son</option>
+                <option>Spouse</option>
+                <option>Sibling</option>
+                <option>Friend</option>
+                <option>Nurse</option>
+                <option>Doctor</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="cgContact">Phone / email</label>
+              <input type="text" id="cgContact" placeholder="+91 98xxx xxxxx" autocomplete="off" />
+            </div>
+            <div class="field">
+              <label for="cgAlerts">Alert level</label>
+              <select id="cgAlerts">
+                <option value="all">All activity</option>
+                <option value="critical" selected>Misses &amp; alerts only</option>
+                <option value="weekly">Weekly summary</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-errors" id="cgErrors" role="alert"></div>
+          <button type="submit" class="btn btn-ghost btn-block btn-sm">Link caregiver</button>
+        </form>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>Alert Feed</h3><span class="chip chip-soft">Shared with care team</span></div>
+        <div class="alert-feed" id="alertFeed"></div>
+        <p class="panel-note">Alerts are generated from live adherence, refill and side-effect data and mirrored to every caregiver at your “critical” alert level.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ JOURNAL ============ -->
+<section class="section" id="journal">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="section-kicker">Side Effects &amp; Journal</span>
+      <h2 class="section-title">Track how you <span class="gradient-text">actually feel</span></h2>
+      <p class="section-sub">Log symptoms with a severity rating. Severe entries are automatically escalated to your caregivers.</p>
+    </div>
+
+    <div class="journal-grid reveal">
+      <div class="panel form-card">
+        <div class="panel-head"><h3>New entry</h3><span class="chip chip-soft">Private by default</span></div>
+        <form id="effForm" novalidate>
+          <div class="field-row">
+            <div class="field">
+              <label for="effMed">Related medication</label>
+              <select id="effMed"><option value="">— General —</option></select>
+            </div>
+            <div class="field">
+              <label for="effType">Type</label>
+              <select id="effType">
+                <option>Symptom</option>
+                <option>Mood</option>
+                <option>Vitals note</option>
+                <option>Doctor visit</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="field range-field">
+            <label for="effSeverity">Severity <span class="req">*</span></label>
+            <div class="range-wrap">
+              <input type="range" id="effSeverity" min="1" max="5" step="1" value="2" />
+              <output class="severity-badge sev-2" id="effSeverityVal">2 · Mild</output>
+            </div>
+            <small class="hint">1 = barely noticeable · 5 = severe, needs attention</small>
+          </div>
+          <div class="field">
+            <label for="effNote">What did you notice? <span class="req">*</span></label>
+            <textarea id="effNote" rows="3" placeholder="e.g. Slight nausea 30 min after breakfast dose"></textarea>
+          </div>
+          <div class="form-errors" id="effErrors" role="alert"></div>
+          <button type="submit" class="btn btn-primary btn-block">Save entry</button>
+        </form>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>Recent entries</h3><span class="chip chip-soft" id="effCount">0 logged</span></div>
+        <div class="eff-list" id="effList"></div>
+        <div class="sev-scale">
+          <span class="sev-dot sev-1"></span><span class="sev-dot sev-2"></span><span class="sev-dot sev-3"></span><span class="sev-dot sev-4"></span><span class="sev-dot sev-5"></span>
+          <small>Severity 1 → 5 · entries ≥ 4 alert your caregiver</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section section-alt" id="faq">
+  <div class="container container-narrow">
+    <div class="section-head reveal">
+      <span class="section-kicker">FAQ</span>
+      <h2 class="section-title">Common <span class="gradient-text">questions</span></h2>
+    </div>
+    <div class="faq-list reveal">
+      <div class="faq-item">
+        <button class="faq-q">How does the caregiver sync work?<span class="faq-toggle">+</span></button>
+        <div class="faq-a"><p>You share your unique sync code with a caregiver. In this demo, everything runs locally in your browser and the sync is simulated — but the flow mirrors a real product: adherence events, missed doses, refill warnings and severe side-effect entries are pushed to every linked caregiver according to their alert level, with a last-sync timestamp you can verify.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">What counts toward my adherence score?<span class="faq-toggle">+</span></button>
+        <div class="faq-a"><p>Every scheduled dose is scored: <b>taken</b> counts 100%, <b>skipped</b> counts 0%, and a dose left untouched past its grace window counts as <b>missed</b> (0%). Doses that are still upcoming or inside their reminder window are excluded so your score is never unfairly penalised. The 7-day chart and the streak use the same rules.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">What happens when I miss a dose?<span class="faq-toggle">+</span></button>
+        <div class="faq-a"><p>CareSync raises a missed-dose alert in your dashboard and the caregiver feed, and the AI companion walks you through the safe options: take it as soon as you remember if it's still close to the scheduled time, or skip and resume the normal schedule — never double up. Always follow the specific guidance from your doctor or the medication leaflet.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">How are refill warnings calculated?<span class="faq-toggle">+</span></button>
+        <div class="faq-a"><p>Each medication tracks pills remaining and a refill size. Every dose you mark as taken decrements the count, and the card shows how many days of supply remain based on your daily dose frequency. When pills fall to 20% of the refill size (or fewer than 3 days of supply), the medication is flagged as “Refill due” on your dashboard and in the alert feed.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Is my health data private?<span class="faq-toggle">+</span></button>
+        <div class="faq-a"><p>Yes. This demo stores everything in your browser's localStorage — nothing leaves your device, and there is no server. You control sharing with the “Share adherence data” switch, and you can unlink a caregiver or clear the chat at any time. In a production deployment this would be backed by encrypted, consent-based storage.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Can the AI companion give medical advice?<span class="faq-toggle">+</span></button>
+        <div class="faq-a"><p>No — it is a supportive companion, not a clinician. It can summarise your schedule, explain adherence trends, remind you of refill status and flag red-flag symptoms that warrant urgent care. Always confirm dosage changes, interactions and side effects with your doctor or pharmacist.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <span class="brand-text">Care<em>Sync</em></span>
+        <p>Smart caregiver-synced AI health companion for medication adherence — reminders, analytics, AI coaching and care-team sync in one place.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Platform</h4>
+        <a href="#dashboard">Dashboard</a>
+        <a href="#meds">Medications</a>
+        <a href="#companion">AI Companion</a>
+        <a href="#caregiver">Caregiver Sync</a>
+      </div>
+      <div class="footer-col">
+        <h4>Tracking</h4>
+        <a href="#dashboard">Adherence Analytics</a>
+        <a href="#meds">Refill Countdown</a>
+        <a href="#journal">Side-Effect Journal</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <a href="mailto:hello@caresync.example">hello@caresync.example</a>
+        <a href="#">Care-team support</a>
+        <a href="#">Privacy &amp; data</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 CareSync · Demo build. Not a medical device — for education &amp; decision support only.</span>
+      <span class="footer-tags">Made with 💚 for patients &amp; caregivers</span>
+    </div>
+  </div>
+</footer>
+
+<div class="toast-wrap" id="toastWrap" aria-live="polite"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
